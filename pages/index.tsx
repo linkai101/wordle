@@ -1,6 +1,8 @@
 import React from 'react';
 import Head from 'next/head';
 
+import toast, { Toaster } from 'react-hot-toast';
+
 import answers from '../data/answers.json'; // List of answers in date order
 import wordlist from '../data/wordlist.json'; // List of all possible 5-letter words (not including answers)
 
@@ -26,8 +28,8 @@ export default function Home() {
   }
 
   function enterGuess() {
-    if (guess.length < 5) return console.log("Not enough letters");
-    if (!wordlist.includes(guess) && !answers.includes(guess)) return console.log("Not in word list");
+    if (guess.length < 5) return toast("Not enough letters");
+    if (!wordlist.includes(guess) && !answers.includes(guess)) return toast("Not in word list");
 
     setGuess('');
     setBoard(board => {
@@ -72,9 +74,15 @@ export default function Home() {
 
   function endGame(status:string) { // status: WIN, FAIL
     // TODO
-    setGameStatus(status);
-    console.log(`GAME END: ${status}`);
-    console.log(`SOLUTION: ${solution}`);
+
+    switch (status) {
+      case "WIN":
+        toast.success("WIN");
+        break;
+      case "FAIL":
+        toast(solution, { duration: Infinity });
+        break;
+    }
   }
 
   return <>
@@ -82,6 +90,8 @@ export default function Home() {
       <title>Wordle Archive</title>
       <meta name="description" content="by @linkai101 on github" />
     </Head>
+
+    <Toaster/> {/* for toasts */}
 
     <div className="flex flex-col h-screen">
       {/* NAVBAR */}
