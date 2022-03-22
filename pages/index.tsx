@@ -61,7 +61,9 @@ export default function Home() {
       evals[rowIndex] = board[rowIndex].split('').map((letter,i) => {
         if (letter === solution.charAt(i))
           return 'correct';
-        if (solution.includes(letter))
+        if (solution.includes(letter) &&
+          solution.split('').reduce((a,v) => (v===letter ? a+1 : a),0)
+            > board[rowIndex].slice(0,i).split('').reduce((a,v) => (v===letter ? a+1 : a),0))
           return 'present';
         return 'absent';
       });
@@ -100,7 +102,7 @@ export default function Home() {
       </nav>
 
       {/* GRID */}
-      <main className="container max-w-lg grow p-4">
+      <main className="container max-w-lg grow p-4"> {/* overflow-scroll */}
         <div className="flex flex-col gap-2 h-full justify-center items-center">
           {board.map((board,i) =>
             <div className="grid grid-cols-5 gap-2">
