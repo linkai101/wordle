@@ -136,12 +136,12 @@ export default function Home() {
           {['q','w','e','r','t','y','u','i','o','p'].map(letter => {
             let letterStatus = getLetterStatus(letter);
             return <button
-              className={`flex-1 rounded-md bg-zinc-300 text-sm font-bold select-none
+              className={`flex-1 rounded-md text-sm font-bold select-none
               ${
                 letterStatus === 'correct' ? 'bg-emerald-400 text-white'
                 : letterStatus === 'present' ? 'bg-amber-300 text-white'
                 : letterStatus === 'absent' ? 'bg-zinc-500 text-white'
-                : ''
+                : 'bg-zinc-300'
               }
               `}
               onClick={() => typeLetter(letter)}
@@ -156,12 +156,12 @@ export default function Home() {
           {['a','s','d','f','g','h','j','k','l'].map(letter => {
             let letterStatus = getLetterStatus(letter);
             return <button
-              className={`flex-1 rounded-md bg-zinc-300 text-sm font-bold select-none
+              className={`flex-1 rounded-md text-sm font-bold select-none
               ${
                 letterStatus === 'correct' ? 'bg-emerald-400 text-white'
                 : letterStatus === 'present' ? 'bg-amber-300 text-white'
                 : letterStatus === 'absent' ? 'bg-zinc-500 text-white'
-                : ''
+                : 'bg-zinc-300'
               }
               `}
               onClick={() => typeLetter(letter)}
@@ -182,12 +182,12 @@ export default function Home() {
           {['z','x','c','v','b','n','m'].map(letter => {
             let letterStatus = getLetterStatus(letter);
             return <button
-              className={`flex-1 rounded-md bg-zinc-300 text-sm font-bold select-none
+              className={`flex-1 rounded-md text-sm font-bold select-none
               ${
                 letterStatus === 'correct' ? 'bg-emerald-400 text-white'
                 : letterStatus === 'present' ? 'bg-amber-300 text-white'
                 : letterStatus === 'absent' ? 'bg-zinc-500 text-white'
-                : ''
+                : 'bg-zinc-300'
               }
               `}
               onClick={() => typeLetter(letter)}
