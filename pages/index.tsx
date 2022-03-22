@@ -18,26 +18,49 @@ export default function Home() {
 
   const [guess, setGuess] = React.useState<string>('');
 
+  React.useEffect(() => {
+    document.addEventListener("keypress", handleKeyPress);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("keypress", handleKeyPress);
+    document.removeEventListener("keydown", handleKeyDown);
+  }
+  }, [guess]);
+
+  function handleKeyPress(e) { // for letters + enter
+    let key = e.key;
+    if (key === 'Enter') return enterGuess();
+    if ((/[a-zA-Z]/).test(key)) return typeLetter(e.key);
+  }
+
+  function handleKeyDown(e) { // for backspace only
+    let key = e.key;
+    if (key === 'Backspace') return deleteLetter();
+  }
+
   function typeLetter(letter:string) {
+    if (gameStatus !== 'IN_PROGRESS') return;
     if (guess.length >= 5) return; // letter cap at 5
-    setGuess(guess => guess + letter);
+    setGuess(guess => guess + letter.toLowerCase());
   }
 
   function deleteLetter() {
+    if (gameStatus !== 'IN_PROGRESS') return;
     setGuess(guess => guess.slice(0,-1));
   }
 
   function enterGuess() {
+    if (gameStatus !== 'IN_PROGRESS') return;
     if (guess.length < 5) return toast("Not enough letters");
     if (!wordlist.includes(guess) && !answers.includes(guess)) return toast("Not in word list");
 
-    setGuess('');
     setBoard(board => {
       board[rowIndex] = guess;
       return board;
     });
     setRowIndex(rowIndex => rowIndex+1);
     evalGuess();
+    setGuess('');
   }
 
   function getLetterStatus(letter:string) { // update guesses on the keyboard
@@ -74,15 +97,17 @@ export default function Home() {
     if (rowIndex >= 5) return endGame('FAIL');
   }
 
-  function endGame(status:string) { // status: WIN, FAIL
+  function endGame(status:string) {
     // TODO
-
+    if (!['WIN','FAIL'].includes(status)) return;
+    setGameStatus(status);
+    
     switch (status) {
       case "WIN":
-        toast.success("WIN");
+        toast.success(solution.toUpperCase(), { duration: Infinity });
         break;
       case "FAIL":
-        toast(solution, { duration: Infinity });
+        toast.error(solution.toUpperCase(), { duration: Infinity });
         break;
     }
   }
@@ -95,46 +120,48 @@ export default function Home() {
 
     <Toaster/> {/* for toasts */}
 
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen h-screen-safari">
       {/* NAVBAR */}
       <nav className="h-14 flex items-center justify-center top-0 p-2 bg-white border-b-2 border-zinc-200">
         <h1 className="text-3xl font-bold">Wordle Archive</h1>
       </nav>
 
       {/* GRID */}
-      <main className="container max-w-lg grow p-4"> {/* overflow-scroll */}
-        <div className="flex flex-col gap-2 h-full justify-center items-center">
+      <main className="container max-w-lg grow overflow-auto flex justify-center items-center p-4">
+        <div className="flex flex-col gap-2 my-auto">
           {board.map((board,i) =>
-            <div className="grid grid-cols-5 gap-2">
+            <div className="grid grid-cols-5 gap-2" key={i}>
               {i === rowIndex ? // guess row
               <>
                 {guess.substr(0,5).split('').map((letter,j) =>
                   <div
-                    className="flex items-center justify-center text-3xl font-bold h-16 w-16 select-none border-2 border-zinc-500"
+                    className="flex items-center justify-center text-3xl font-bold h-14 sm:h-16 w-14 sm:w-16 select-none border-2 border-zinc-500"
+                    key={`${j}_${letter}`}
                   >
                     {letter.toUpperCase()}
                   </div>
                 )}
-                {[...Array(Math.max(0,5-guess.length))].map(a =>
-                  <div className="border-2 border-zinc-300 h-16 w-16"></div>
+                {[...Array(Math.max(0,5-guess.length))].map((a,j) =>
+                  <div className="border-2 border-zinc-300 h-14 sm:h-16 w-14 sm:w-16" key={j}></div>
                 )}
               </>
               : board ? // previous row
                 board.split('').map((letter,j) =>
                   <div
-                    className={`flex items-center justify-center text-3xl font-bold h-16 w-16 select-none text-white
+                    className={`flex items-center justify-center text-3xl font-bold h-14 sm:h-16 w-14 sm:w-16 select-none text-white
                       ${!evals[i] ? 'text-black border-2 border-zinc-500'
                         : evals[i][j] === 'correct' ? 'bg-emerald-400'
                         : evals[i][j] === 'present' ? 'bg-amber-300'
                         : 'bg-zinc-500'
                       }`}
+                    key={`${j}_${letter}`}
                   >
                     {letter.toUpperCase()}
                   </div>
                 )
               : // blank row
-                [...Array(5)].map(a =>
-                  <div className="border-2 border-zinc-300 h-16 w-16"></div>
+                [...Array(5)].map((a,j) =>
+                  <div className="border-2 border-zinc-300 h-14 sm:h-16 w-14 sm:w-16" key={j}></div>
                 )
               }
             </div>
@@ -143,8 +170,8 @@ export default function Home() {
       </main>
 
       {/* KEYBOARD */}
-      <footer className="container max-w-lg px-4 py-2 flex flex-col gap-2">
-        <div className="flex h-16 md:h-14 gap-1">
+      <footer className="container max-w-lg p-2 flex flex-col gap-2">
+        <div className="flex h-14 gap-1">
           {['q','w','e','r','t','y','u','i','o','p'].map(letter => {
             let letterStatus = getLetterStatus(letter);
             return <button
@@ -164,7 +191,7 @@ export default function Home() {
           })}
         </div>
         
-        <div className="flex h-16 md:h-14 gap-1 px-2 md:px-6">
+        <div className="flex h-14 gap-1 px-2 md:px-6">
           {['a','s','d','f','g','h','j','k','l'].map(letter => {
             let letterStatus = getLetterStatus(letter);
             return <button
@@ -184,7 +211,7 @@ export default function Home() {
           })}
         </div>
         
-        <div className="flex h-16 md:h-14 gap-1">
+        <div className="flex h-14 gap-1">
           <button
             className="w-12 sm:w-16 flex-none rounded-md bg-zinc-300 text-sm font-bold select-none"
             onClick={enterGuess}

@@ -9,3 +9,10 @@ body {
   padding: 0;
   margin: 0;
 }
+
+@supports (-webkit-touch-callout: none) {
+  .h-screen-safari {
+    height: -webkit-fill-available;
+    -webkit-touch-callout: none;
+  }
+}
