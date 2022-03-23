@@ -18,14 +18,12 @@ export default function ArchivePage({ wordleData }) {
 
   // DEV ONLY
   React.useEffect(() => {
-    if (!solution || wordleData.error) return;
+    if (wordleData.error) return;
     toast(`Wordle #${wordleData.id} - ${(new Date(wordleData.date.month+'/'+wordleData.date.day+'/'+wordleData.date.year).toLocaleDateString('en-US',{month:"long", day:"2-digit", year:"numeric"}))}`);
   }, []);
 
   React.useEffect(() => {
-    let solution = wordleData.solution;
-
-    if (!solution || wordleData.error) {
+    if (!wordleData.solution || wordleData.error) {
       toast.error("An error occured", { duration: Infinity });
       setBoard(['oops ','error','','','','']);
       setEvals([['absent','absent','absent','absent','absent'],['absent','absent','absent','absent','absent'],null,null,null,null]);
@@ -33,7 +31,7 @@ export default function ArchivePage({ wordleData }) {
       setRowIndex(2);
       return;
     }
-    setSolution(solution);
+    setSolution(wordleData.solution);
     setGameStatus("IN_PROGRESS");
   }, [wordleData]);
 
