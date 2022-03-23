@@ -18,6 +18,7 @@ export default function ArchivePage({ wordleData }) {
 
   // DEV ONLY
   React.useEffect(() => {
+    if (!solution || wordleData.error) return;
     toast(`Wordle #${wordleData.id} - ${(new Date(wordleData.date.month+'/'+wordleData.date.day+'/'+wordleData.date.year).toLocaleDateString('en-US',{month:"long", day:"2-digit", year:"numeric"}))}`);
   }, []);
 
