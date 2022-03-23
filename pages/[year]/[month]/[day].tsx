@@ -3,25 +3,27 @@ import Head from 'next/head';
 
 import toast, { Toaster } from 'react-hot-toast';
 
-import ANSWERS from '../data/answers.json'; // List of answers in date order
-import WORDLIST from '../data/wordlist.json'; // List of all possible 5-letter words (not including answers)
+import ANSWERS from '../../../data/answers.json'; // List of answers in date order
+import WORDLIST from '../../../data/wordlist.json'; // List of all possible 5-letter words (not including answers)
 
-export default function Home({ wordleData }) {
+export default function ArchivePage({ wordleData }) {
   const [gameStatus, setGameStatus] = React.useState("LOADING"); // LOADING, IN_PROGRESS, WIN, FAIL
 
   const [board, setBoard] = React.useState<string[]>(['','','','','','']);
   const [evals, setEvals] = React.useState<string[][]>([null,null,null,null,null,null]);
   const [rowIndex, setRowIndex] = React.useState<number>(0);
-  const [solution, setSolution] = React.useState<string>(wordleData.solution);
+  const [solution, setSolution] = React.useState<string>('');
 
   const [guess, setGuess] = React.useState<string>('');
 
   // DEV ONLY
   React.useEffect(() => {
-    toast("Welcome to Wordle Archive! This is a work-in-progress, so expect chaos :)");
+    toast(`Wordle #${wordleData.id} - ${(new Date(wordleData.date.month+'/'+wordleData.date.day+'/'+wordleData.date.year).toLocaleDateString('en-US',{month:"long", day:"2-digit", year:"numeric"}))}`);
   }, []);
 
   React.useEffect(() => {
+    let solution = wordleData.solution;
+
     if (!solution || wordleData.error) {
       toast.error("An error occured", { duration: Infinity });
       setBoard(['oops ','error','','','','']);
@@ -30,8 +32,9 @@ export default function Home({ wordleData }) {
       setRowIndex(2);
       return;
     }
+    setSolution(solution);
     setGameStatus("IN_PROGRESS");
-  }, [solution]);
+  }, [wordleData]);
 
   // KEYBOARD INPUT
   React.useEffect(() => {
@@ -264,10 +267,10 @@ export default function Home({ wordleData }) {
   </>;
 }
 
-export async function getServerSideProps() {
-  const currentDate = new Date();
+export async function getServerSideProps({ params }) {
+  const { year, month, day } = params;
 
-  const res = await fetch(`http://159.223.184.65:3000/api/${currentDate.getFullYear()}/${currentDate.getMonth()+1}/${currentDate.getDate()}`);
+  const res = await fetch(`http://159.223.184.65:3000/api/${year}/${month}/${day}`);
   const json = await res.json();
 
   return { props: { wordleData: json } }
