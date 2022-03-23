@@ -270,7 +270,7 @@ export default function ArchivePage({ wordleData }) {
 export async function getServerSideProps({ params }) {
   const { year, month, day } = params;
 
-  const res = await fetch(`http://159.223.184.65:3000/api/${year}/${month}/${day}`);
+  const res = await fetch(`http://wordle.linkaiwu.com/api/${year}/${month}/${day}`);
   const json = await res.json();
 
   return { props: { wordleData: json } }

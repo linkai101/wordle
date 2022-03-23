@@ -6,13 +6,13 @@ import toast, { Toaster } from 'react-hot-toast';
 import ANSWERS from '../data/answers.json'; // List of answers in date order
 import WORDLIST from '../data/wordlist.json'; // List of all possible 5-letter words (not including answers)
 
-export default function Home({ wordleData }) {
+export default function Home({  }) {
   const [gameStatus, setGameStatus] = React.useState("LOADING"); // LOADING, IN_PROGRESS, WIN, FAIL
 
   const [board, setBoard] = React.useState<string[]>(['','','','','','']);
   const [evals, setEvals] = React.useState<string[][]>([null,null,null,null,null,null]);
   const [rowIndex, setRowIndex] = React.useState<number>(0);
-  const [solution, setSolution] = React.useState<string>(wordleData.solution);
+  const [solution, setSolution] = React.useState<string>('');
 
   const [guess, setGuess] = React.useState<string>('');
 
@@ -22,16 +22,19 @@ export default function Home({ wordleData }) {
   }, []);
 
   React.useEffect(() => {
-    if (!solution || wordleData.error) {
-      toast.error("An error occured", { duration: Infinity });
-      setBoard(['oops ','error','','','','']);
-      setEvals([['absent','absent','absent','absent','absent'],['absent','absent','absent','absent','absent'],null,null,null,null]);
-      setGuess(':(');
-      setRowIndex(2);
-      return;
-    }
-    setGameStatus("IN_PROGRESS");
+    fetchWordle().then(wordleData => {
+      setSolution(wordleData.solution);
+      setGameStatus("IN_PROGRESS")
+    });
   }, [solution]);
+
+  async function fetchWordle() {
+    const currentDate = new Date();
+
+    const res = await fetch(`/api/${currentDate.getFullYear()}/${currentDate.getMonth()+1}/${currentDate.getDate()}`);
+    const json = await res.json();
+    return json;
+  }
 
   // KEYBOARD INPUT
   React.useEffect(() => {
@@ -262,13 +265,4 @@ export default function Home({ wordleData }) {
       </footer>
     </div>
   </>;
-}
-
-export async function getServerSideProps() {
-  const currentDate = new Date();
-
-  const res = await fetch(`http://159.223.184.65:3000/api/${currentDate.getFullYear()}/${currentDate.getMonth()+1}/${currentDate.getDate()}`);
-  const json = await res.json();
-
-  return { props: { wordleData: json } }
 }
