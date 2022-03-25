@@ -35,6 +35,7 @@ export default function Home() {
       setGuess('');
       setSolution(wordleData.solution);
       setGameStatus("IN_PROGRESS");
+      toast.dismiss();
     });
   }, [solution]);
 

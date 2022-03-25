@@ -34,6 +34,7 @@ export default function ArchivePage({ wordleData }) {
     setGuess('');
     setSolution(wordleData.solution);
     setGameStatus("IN_PROGRESS");
+    toast.dismiss();
   }, [wordleData]);
 
   // KEYBOARD INPUT
