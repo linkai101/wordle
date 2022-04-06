@@ -140,7 +140,7 @@ export default function ArchivePage({ wordleData }) {
     const dates = getDatesInRange(new Date("6/19/2021"), new Date()).reverse();
 
     React.useEffect(() => {
-      currentEl.current.scrollIntoView();
+      if (currentEl?.current) currentEl.current.scrollIntoView();
     }, [open]);
 
     return (

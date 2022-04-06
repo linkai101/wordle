@@ -20,6 +20,7 @@ export default function handler(req, res) {
   if (daysPassed < 0 || daysPassed > ANSWERS.length)
     return res.status(404).json({
       error: "No word found for specified date!",
+      date: { year, month, day },
       timestamp: Date.now()
     });
 
