@@ -50,7 +50,7 @@ export default function ArchivePage({ wordleData }) {
   function handleKeyPress(e) { // for letters + enter
     let key = e.key;
     if (key === 'Enter') return enterGuess();
-    if ((/[a-zA-Z]/).test(key)) return typeLetter(e.key);
+    if ((/[a-zA-Z]/).test(key) && key.length === 1) return typeLetter(e.key);
   }
 
   function handleKeyDown(e) { // for backspace only
