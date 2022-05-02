@@ -1,2 +1,2 @@
 # wordle
-A Wordle archive (work-in-progress) by @linkai101
+A Wordle archive by @linkai101
