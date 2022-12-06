@@ -20,7 +20,7 @@ export default function Home({ wordleData }) {
 
   React.useEffect(() => {
     if (!wordleData.solution || wordleData.error) {
-      toast.error("An error occured", { duration: Infinity });
+      toast.error("An error occurred", { duration: Infinity });
       setBoard(['oops ','error','','','','']);
       setEvals([['absent','absent','absent','absent','absent'],['absent','absent','absent','absent','absent'],null,null,null,null]);
       setGuess(':(');
