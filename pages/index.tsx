@@ -4,10 +4,9 @@ import { useRouter } from 'next/router';
 
 import toast, { Toaster } from 'react-hot-toast';
 
-import ANSWERS from '../data/answers.json'; // List of answers in date order
-import WORDLIST from '../data/wordlist.json'; // List of all possible 5-letter words (not including answers)
+import WORDLIST from '../data/wordlist.json'; // List of all possible 5-letter words
 
-export default function Home() {
+export default function Home({ wordleData }) {
   const router = useRouter();
 
   const [gameStatus, setGameStatus] = React.useState("LOADING"); // LOADING, IN_PROGRESS, WIN, FAIL
@@ -20,32 +19,22 @@ export default function Home() {
   const [guess, setGuess] = React.useState<string>('');
 
   React.useEffect(() => {
-    fetchWordle().then(wordleData => {
-      if (!wordleData.solution || wordleData.error) {
-        toast.error("An error occured", { duration: Infinity });
-        setBoard(['oops ','error','','','','']);
-        setEvals([['absent','absent','absent','absent','absent'],['absent','absent','absent','absent','absent'],null,null,null,null]);
-        setGuess(':(');
-        setRowIndex(2);
-        return;
-      }
-      setBoard(['','','','','','']);
-      setEvals([null,null,null,null,null,null]);
-      setRowIndex(0);
-      setGuess('');
-      setSolution(wordleData.solution);
-      setGameStatus("IN_PROGRESS");
-      toast.dismiss();
-    });
+    if (!wordleData.solution || wordleData.error) {
+      toast.error("An error occured", { duration: Infinity });
+      setBoard(['oops ','error','','','','']);
+      setEvals([['absent','absent','absent','absent','absent'],['absent','absent','absent','absent','absent'],null,null,null,null]);
+      setGuess(':(');
+      setRowIndex(2);
+      return;
+    }
+    setBoard(['','','','','','']);
+    setEvals([null,null,null,null,null,null]);
+    setRowIndex(0);
+    setGuess('');
+    setSolution(wordleData.solution);
+    setGameStatus("IN_PROGRESS");
+    toast.dismiss();
   }, [solution]);
-
-  async function fetchWordle() {
-    const currentDate = new Date();
-
-    const res = await fetch(`/api/${currentDate.getFullYear()}/${currentDate.getMonth()+1}/${currentDate.getDate()}`);
-    const json = await res.json();
-    return json;
-  }
 
   // KEYBOARD INPUT
   React.useEffect(() => {
@@ -83,7 +72,7 @@ export default function Home() {
   function enterGuess() {
     if (gameStatus !== 'IN_PROGRESS') return;
     if (guess.length < 5) return toast("Not enough letters");
-    if (!WORDLIST.includes(guess) && !ANSWERS.includes(guess)) return toast("Not in word list");
+    if (!WORDLIST.includes(guess)) return toast("Not in word list");
 
     setBoard(board => {
       board[rowIndex] = guess;
@@ -369,4 +358,11 @@ function getDatesInRange(start, end) {
   }
 
   return dates;
+}
+
+export async function getServerSideProps() {
+  const res = await fetch(`http://wordle.linkaiwu.com/api/today`);
+  const json = await res.json();
+
+  return { props: { wordleData: json } }
 }
