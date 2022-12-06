@@ -1,7 +1,6 @@
 import axios from 'axios';
 
-// First word: June 19, 2021
-const STARTING_DATE = new Date("6/19/2021");
+const STARTING_DATE = new Date("6/18/2021");
 
 interface Query {
   year: number;

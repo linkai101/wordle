@@ -6,6 +6,8 @@ import toast, { Toaster } from 'react-hot-toast';
 
 import WORDLIST from '../../../data/wordlist.json'; // List of all possible 5-letter words
 
+const STARTING_DATE = new Date("6/18/2021");
+
 export default function ArchivePage({ wordleData, params }) {
   const router = useRouter();
 
@@ -135,7 +137,7 @@ export default function ArchivePage({ wordleData, params }) {
     const [open, setOpen] = React.useState(false);
     const currentEl = React.useRef<HTMLLIElement>(null);
 
-    const dates = getDatesInRange(new Date("6/19/2021"), new Date()).reverse();
+    const dates = getDatesInRange(STARTING_DATE, new Date()).reverse();
 
     React.useEffect(() => {
       if (currentEl?.current) currentEl.current.scrollIntoView();
