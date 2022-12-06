@@ -4,8 +4,7 @@ import { useRouter } from 'next/router';
 
 import toast, { Toaster } from 'react-hot-toast';
 
-import ANSWERS from '../../../data/answers.json'; // List of answers in date order
-import WORDLIST from '../../../data/wordlist.json'; // List of all possible 5-letter words (not including answers)
+import WORDLIST from '../../../data/wordlist.json'; // List of all possible 5-letter words
 
 export default function ArchivePage({ wordleData }) {
   const router = useRouter();
@@ -73,7 +72,7 @@ export default function ArchivePage({ wordleData }) {
   function enterGuess() {
     if (gameStatus !== 'IN_PROGRESS') return;
     if (guess.length < 5) return toast("Not enough letters");
-    if (!WORDLIST.includes(guess) && !ANSWERS.includes(guess)) return toast("Not in word list");
+    if (!WORDLIST.includes(guess)) return toast("Not in word list");
 
     setBoard(board => {
       board[rowIndex] = guess;
