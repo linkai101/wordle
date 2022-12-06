@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // First word: June 19, 2021
-const STARTING_DATE = new Date("6/19/2021");
+const STARTING_DATE = new Date("6/18/2021");
 
 interface Query {
   year: number;
@@ -22,8 +22,8 @@ export default function handler(req, res) {
     const { year, month, day }: Query = req.query;
 
     const queryDate = new Date(`${month}/${day}/${year}`);
-    const daysPassed = Math.floor(((new Date()).getTime()-STARTING_DATE.getTime())/(1000*3600*24));
     const daysSince = Math.floor(((new Date()).getTime()-queryDate.getTime())/(1000*3600*24));
+    const daysPassed = Math.floor((queryDate.getTime()-STARTING_DATE.getTime())/(1000*3600*24));
 
     const options = {
       method: 'GET',
@@ -35,7 +35,7 @@ export default function handler(req, res) {
     };
 
     axios.request(options).then((apiRes) => {
-      if (daysSince < 0 || daysSince >= apiRes.data.data.length) {
+      if (daysSince < 0 || daysPassed < 0) {
         res.status(404).json({
           error: "No word found for specified date!",
           date: { year, month, day },
@@ -43,10 +43,9 @@ export default function handler(req, res) {
         });
         resolve();
       }
-      const { answer, day:wordDay } = apiRes.data.data.find(a => Math.floor(Math.floor((new Date(Number(a.day))).getTime()-STARTING_DATE.getTime())/(1000*3600*24)) === daysPassed);
-
+      const { answer } = apiRes.data.data.find(a => new Date(Number(a.day)).toDateString()===queryDate.toDateString());
       res.status(200).json({
-        id: Math.floor(Math.floor((new Date(Number(wordDay))).getTime()-STARTING_DATE.getTime())/(1000*3600*24)),
+        id: daysPassed,
         solution: answer.toLowerCase(),
         timestamp: Date.now(),
       });
