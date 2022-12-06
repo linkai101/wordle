@@ -118,7 +118,6 @@ export default function ArchivePage({ wordleData, params }) {
   }
 
   function endGame(status:string) {
-    // TODO
     if (!['WIN','FAIL'].includes(status)) return;
     setGameStatus(status);
     
