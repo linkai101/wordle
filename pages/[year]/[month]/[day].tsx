@@ -6,7 +6,7 @@ import toast, { Toaster } from 'react-hot-toast';
 
 import WORDLIST from '../../../data/wordlist.json'; // List of all possible 5-letter words
 
-export default function ArchivePage({ wordleData }) {
+export default function ArchivePage({ wordleData, params }) {
   const router = useRouter();
 
   const [gameStatus, setGameStatus] = React.useState("LOADING"); // LOADING, IN_PROGRESS, WIN, FAIL
@@ -151,7 +151,7 @@ export default function ArchivePage({ wordleData }) {
           <span className="flex items-center">
             {dates.length>0 &&
               <span className="block truncate text-sm md:text-md">
-                #{wordleData.id} - {(new Date(`${wordleData.date.month}/${wordleData.date.day}/${wordleData.date.year}`)).toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' })}
+                #{wordleData.id} - {(new Date(`${params.month}/${params.day}/${params.year}`)).toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' })}
               </span>
             }
           </span>
@@ -176,7 +176,7 @@ export default function ArchivePage({ wordleData }) {
             ref={currentEl}
           >
             <div className="flex items-center">
-              <span className="block truncate">#{wordleData.id} - {(new Date(`${wordleData.date.month}/${wordleData.date.day}/${wordleData.date.year}`)).toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' })}</span>
+              <span className="block truncate">#{wordleData.id} - {(new Date(`${params.month}/${params.day}/${params.year}`)).toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' })}</span>
             </div>
 
             <span className="text-indigo-600 absolute inset-y-0 right-0 flex items-center pr-2">
@@ -378,5 +378,5 @@ export async function getServerSideProps({ params }) {
   const res = await fetch(`http://wordle.linkaiwu.com/api/${year}/${month}/${day}`);
   const json = await res.json();
 
-  return { props: { wordleData: json } }
+  return { props: { wordleData: json, params } }
 }
