@@ -28,7 +28,7 @@ export default function handler(req, res) {
       method: 'GET',
       url: 'https://wordle-answers-solutions.p.rapidapi.com/answers',
       headers: {
-        'X-RapidAPI-Key': 'b7e30a9b3amsh7d671edcb412c75p12e41fjsnc5e4d3ab537f',
+        'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
         'X-RapidAPI-Host': 'wordle-answers-solutions.p.rapidapi.com'
       }
     };
