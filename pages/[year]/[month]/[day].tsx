@@ -6,7 +6,7 @@ import toast, { Toaster } from 'react-hot-toast';
 
 import WORDLIST from '../../../data/wordlist.json'; // List of all possible 5-letter words
 
-const STARTING_DATE = new Date("6/18/2021");
+const STARTING_DATE = new Date("6/19/2021");
 
 export default function ArchivePage({ wordleData, params }) {
   const router = useRouter();
@@ -21,7 +21,7 @@ export default function ArchivePage({ wordleData, params }) {
   const [guess, setGuess] = React.useState<string>('');
 
   React.useEffect(() => {
-    if (!wordleData.solution || wordleData.error) {
+    if (!wordleData.solution || wordleData.status==="ERROR") {
       toast.error("An error occurred", { duration: Infinity });
       setBoard(['oops ','error','','','','']);
       setEvals([['absent','absent','absent','absent','absent'],['absent','absent','absent','absent','absent'],null,null,null,null]);
@@ -195,7 +195,7 @@ export default function ArchivePage({ wordleData, params }) {
               key={d.getTime()}
               onClick={() => {
                 if (i===0) return router.push('/');
-                router.push(`/${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`);
+                router.push(`/${d.getFullYear()}/${("0"+(d.getMonth()+1)).slice(-2)}/${("0"+d.getDate()).slice(-2)}`);
               }}
               ref={i===dates.length-1-wordleData.id ? currentEl : null}
             >
@@ -376,8 +376,11 @@ function getDatesInRange(start, end) {
 export async function getServerSideProps({ params }) {
   const { year, month, day } = params;
 
-  const res = await fetch(`http://wordle.linkaiwu.com/api/${year}/${month}/${day}`);
-  const json = await res.json();
+  const res = await fetch(`https://www.nytimes.com/svc/wordle/v2/${year}-${month}-${day}.json`);
+  if (res.status === 404)
+    return { props: { wordleData: { status: "ERROR" }, params } };
+  let json = await res.json();
+  json.id = json.days_since_launch || 0;
 
-  return { props: { wordleData: json, params } }
+  return { props: { wordleData: json, params } };
 }

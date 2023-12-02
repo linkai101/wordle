@@ -6,7 +6,7 @@ import toast, { Toaster } from 'react-hot-toast';
 
 import WORDLIST from '../data/wordlist.json'; // List of all possible 5-letter words
 
-const STARTING_DATE = new Date("6/18/2021");
+const STARTING_DATE = new Date("6/19/2021");
 
 export default function Home({ wordleData }) {
   const router = useRouter();
@@ -21,7 +21,7 @@ export default function Home({ wordleData }) {
   const [guess, setGuess] = React.useState<string>('');
 
   React.useEffect(() => {
-    if (!wordleData.solution || wordleData.error) {
+    if (!wordleData.solution || wordleData.status==="ERROR") {
       toast.error("An error occurred", { duration: Infinity });
       setBoard(['oops ','error','','','','']);
       setEvals([['absent','absent','absent','absent','absent'],['absent','absent','absent','absent','absent'],null,null,null,null]);
@@ -167,7 +167,7 @@ export default function Home({ wordleData }) {
               className="text-gray-900 cursor-default select-none relative py-2 pl-3 pr-2 text-sm md:text-md hover:bg-zinc-100"
               role="option"
               key={d.getTime()}
-              onClick={() => router.push(`/${d.getFullYear()}/${d.getMonth()+1}/${d.getDate()}`)}
+              onClick={() => router.push(`/${d.getFullYear()}/${("0"+(d.getMonth()+1)).slice(-2)}/${("0"+d.getDate()).slice(-2)}`)}
             >
               <div className="flex items-center">
                 <span className="block truncate">#{dates.length-1-i} - {d.toLocaleDateString('en-US', { weekday: 'short', month: 'long', day: 'numeric' })}</span>
@@ -363,8 +363,14 @@ function getDatesInRange(start, end) {
 }
 
 export async function getServerSideProps() {
-  const res = await fetch(`http://wordle.linkaiwu.com/api/today`);
-  const json = await res.json();
+  const today = new Date();
+  const params = { year: today.getFullYear(), month: ("0"+(today.getMonth()+1)).slice(-2), day: ("0"+today.getDate()).slice(-2) };
+  const { year, month, day } = params;
+  const res = await fetch(`https://www.nytimes.com/svc/wordle/v2/${year}-${month}-${day}.json`);
+  if (res.status === 404)
+    return { props: { wordleData: { status: "ERROR" }, params } };
+  let json = await res.json();
+  json.id = json.days_since_launch || 0;
 
-  return { props: { wordleData: json } }
+  return { props: { wordleData: json, params } };
 }
