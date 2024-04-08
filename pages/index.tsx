@@ -1,6 +1,4 @@
-"use client";
 import React from 'react';
-import { useRouter } from 'next/router';
 import toast, { Toaster } from 'react-hot-toast';
 
 import DateSelect from '../components/DateSelect';
@@ -9,8 +7,6 @@ import WORDLIST from '../data/wordlist.json'; // List of all possible 5-letter w
 
 
 export default function HomePage() {
-  const router = useRouter();
-
   const [wordleData, setWordleData] = React.useState(null);
   const [date, setDate] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
@@ -25,31 +21,27 @@ export default function HomePage() {
   const [guess, setGuess] = React.useState<string>('');
 
   React.useEffect(() => {
-    const date = new Date().toLocaleDateString('en-US', {
+    const nowDate = new Date().toLocaleDateString('en-US', {
       month: '2-digit',
       day: '2-digit',
       year: 'numeric'
     });
-    const [month, day, year] = date.split('/');
+    const [month, day, year] = nowDate.split('/');
     setDate({ month, day, year });
-    console.log(`https://www.nytimes.com/svc/wordle/v2/${year}-${month}-${day}.json`)
-
-    fetch(`https://www.nytimes.com/svc/wordle/v2/${year}-${month}-${day}.json`)
+    
+    fetch(`/api/${year}/${month}/${day}`)
     .then(res => {
-      if (res.status === 404)
-        return { props: { wordleData: { status: "ERROR" }, params: { year, month, day } } };
       return res.json();
     })
     .then(data => {
-      data.id = data.days_since_launch || 0;
+      if (data.status === "ERROR") console.error(data);
       setWordleData(data);
       setLoading(false);
     })
-    .catch(e => {
-      console.error(e);
-      // setWordleData({ status: "ERROR" });
-      // setLoading(false);
-      router.replace(`/${year}/${month}/${day}`);
+    .catch(err => {
+      console.error(err);
+      setWordleData({ status: "ERROR" });
+      setLoading(false);
     });
   }, []);
 
@@ -317,9 +309,10 @@ export default function HomePage() {
 //   });
 //   const [month, day, year] = date.split('/');
   
-//   const router = useRouter();
-  
-//   useEffect(() => {
-//     router.replace(`/${year}/${month}/${day}`);
-//   });
+//   return <div className="h-screen">
+//     <iframe
+//       className="w-full h-screen"
+//       src={`/${year}/${month}/${day}`}
+//     />
+//   </div>;
 // }
