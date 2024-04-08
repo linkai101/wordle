@@ -7,6 +7,8 @@ function MyApp({ Component, pageProps }) {
     <Head>
       <link rel="icon" sizes="3232" href="/images/NYT-Wordle-Icon-32.png"/>
       <link rel="apple-touch-icon" href="/images/NYT-Wordle-Icon-192.png"/>
+      <title>Wordle Archive</title>
+      <meta name="description" content="by @linkai101 on github" />
     </Head>
 
     <Component {...pageProps} />
