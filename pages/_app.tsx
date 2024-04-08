@@ -8,7 +8,7 @@ function MyApp({ Component, pageProps }) {
       <link rel="icon" sizes="3232" href="/images/NYT-Wordle-Icon-32.png"/>
       <link rel="apple-touch-icon" href="/images/NYT-Wordle-Icon-192.png"/>
       <title>Wordle Archive</title>
-      <meta name="description" content="by @linkai101 on github" />
+      <meta name="description" content="Play today's and previous Wordles, all in one familiar interface." />
     </Head>
 
     <Component {...pageProps} />
