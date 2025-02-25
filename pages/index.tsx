@@ -140,7 +140,7 @@ export default function HomePage() {
           return 'correct';
         if (solution.includes(letter) &&
           solution.split('').reduce((a,v) => (v===letter ? a+1 : a),0) // num of occurrences of letter in solution
-            > board[rowIndex].split('').reduce((a,v) => (v===letter ? a+1 : a),0)) // num of occurrences of letter in guess
+            >= board[rowIndex].split('').reduce((a,v) => (v===letter ? a+1 : a),0)) // num of occurrences of letter in guess
           return 'present';
         return 'absent';
       });
