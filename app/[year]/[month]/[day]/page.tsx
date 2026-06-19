@@ -1,20 +1,24 @@
+import { notFound } from "next/navigation";
 import { WordleUI } from "@/components/wordle";
-import { fetchWordleData } from "@/lib/wordle-fetch";
+
+export const revalidate = 86400;
 
 interface ArchivePageProps {
-  params: { year: string; month: string; day: string };
+  params: Promise<{ year: string; month: string; day: string }>;
 }
 
 export default async function ArchivePage({ params }: ArchivePageProps) {
-  const { year: yearString, month: monthString, day: dayString } = await params;
+  const { year, month, day } = await params;
 
-  // Parse date
-  const [year, month, day] = [parseInt(yearString), parseInt(monthString), parseInt(dayString)];
-  const date = new Date(year, month - 1, day);
-  date.setHours(23, 59, 59, 999); // End of day
+  const res = await fetch(`https://www.nytimes.com/svc/wordle/v2/${year}-${month}-${day}.json`);
+  if (!res.ok) {
+    if (res.status === 404) notFound();
+    throw new Error(`Failed to fetch Wordle data: ${res.status}`);
+  }
+  const wordleData = await res.json();
 
-  // Fetch Wordle data
-  const wordleData = await fetchWordleData(yearString, monthString, dayString);
+  const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+  date.setHours(23, 59, 59, 999);
 
   return (
     <WordleUI

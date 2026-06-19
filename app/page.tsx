@@ -1,48 +1,22 @@
-"use client";
+import { WordleUI } from "@/components/wordle";
 
-import { useEffect, useState } from "react";
-import { WordleUI, WordleUILoading } from "@/components/wordle";
-import { fetchWordleData } from "@/lib/wordle-fetch";
+export const revalidate = 3600;
 
-export default function HomePage() {
-  const [date, setDate] = useState<Date | null>(null);
-  const [wordleData, setWordleData] = useState<{
-    days_since_launch?: number;
-    solution: string;
-  } | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<Error | null>(null);
+export default async function HomePage() {
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/New_York",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  });
+  const [year, month, day] = formatter.format(new Date()).split("-");
 
-  useEffect(() => {
-    // Get today's date from the client
-    const today = new Date();
-    today.setHours(23, 59, 59, 999); // End of today
-    setDate(today);
+  const res = await fetch(`https://www.nytimes.com/svc/wordle/v2/${year}-${month}-${day}.json`);
+  if (!res.ok) throw new Error(`Failed to fetch Wordle data: ${res.status}`);
+  const wordleData = await res.json();
 
-    const year = today.getFullYear().toString().padStart(4, "0");
-    const month = (today.getMonth() + 1).toString().padStart(2, "0");
-    const day = today.getDate().toString().padStart(2, "0");
-
-    // Fetch today's Wordle data
-    fetchWordleData(year, month, day)
-      .then((data) => {
-        setWordleData(data);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err instanceof Error ? err : new Error(String(err)));
-        setLoading(false);
-      });
-  }, []);
-
-  // Throw error during render to trigger error boundary
-  if (error) {
-    throw error;
-  }
-
-  if (loading || !date || !wordleData) {
-    return <WordleUILoading />;
-  }
+  const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+  date.setHours(23, 59, 59, 999);
 
   return (
     <WordleUI

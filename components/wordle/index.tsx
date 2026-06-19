@@ -40,29 +40,6 @@ export function WordleUI({ date, wordleNumber, solution }: WordleUIProps) {
   );
 }
 
-export function WordleUILoading() {
-  return (
-    <div className="flex flex-row-reverse">
-      {/* RIGHT */}
-      <div className="flex-1 overflow-hidden">
-        <AboutSidebarContent />
-      </div>
-
-      {/* CENTER */}
-      <section className="border-border container h-dvh max-w-2xl border-x">
-        <div className="flex h-full items-center justify-center">
-          <div className="border-muted size-8 animate-spin rounded-full border-4 border-t-transparent" />
-        </div>
-      </section>
-
-      {/* LEFT */}
-      <div className="flex flex-1 flex-col items-end overflow-hidden">
-        <DatePickerSidebarContent selectedDate={new Date()} />
-      </div>
-    </div>
-  );
-}
-
 function Header({ date, wordleNumber }: { date: Date; wordleNumber: number }) {
   return (
     <div className="flex items-center p-4">
