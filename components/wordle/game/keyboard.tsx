@@ -1,4 +1,3 @@
-import type { Dispatch, SetStateAction } from "react";
 import { cn } from "@/lib/utils";
 import { Delete } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -8,11 +7,12 @@ interface KeyboardProps {
     [key: string]: "correct" | "present" | "absent";
   };
   disabled: boolean;
-  setCurrentGuess: Dispatch<SetStateAction<string>>;
+  typeLetter: (letter: string) => void;
+  deleteLetter: () => void;
   submitGuess: () => void;
 }
 
-export function Keyboard({ evals, disabled, setCurrentGuess, submitGuess }: KeyboardProps) {
+export function Keyboard({ evals, disabled, typeLetter, deleteLetter, submitGuess }: KeyboardProps) {
   return (
     <div className="flex flex-col gap-2 px-2 pb-2 xl:px-6 xl:pb-4">
       <div className="flex h-14 gap-1">
@@ -22,7 +22,7 @@ export function Keyboard({ evals, disabled, setCurrentGuess, submitGuess }: Keyb
             letter={letter}
             evaluation={evals[letter]}
             disabled={disabled}
-            setCurrentGuess={setCurrentGuess}
+            typeLetter={typeLetter}
           />
         ))}
       </div>
@@ -34,7 +34,7 @@ export function Keyboard({ evals, disabled, setCurrentGuess, submitGuess }: Keyb
             letter={letter}
             evaluation={evals[letter]}
             disabled={disabled}
-            setCurrentGuess={setCurrentGuess}
+            typeLetter={typeLetter}
           />
         ))}
       </div>
@@ -48,11 +48,11 @@ export function Keyboard({ evals, disabled, setCurrentGuess, submitGuess }: Keyb
             letter={letter}
             evaluation={evals[letter]}
             disabled={disabled}
-            setCurrentGuess={setCurrentGuess}
+            typeLetter={typeLetter}
           />
         ))}
 
-        <KeyboardDeleteKey disabled={disabled} setCurrentGuess={setCurrentGuess} />
+        <KeyboardDeleteKey disabled={disabled} deleteLetter={deleteLetter} />
       </div>
     </div>
   );
@@ -62,18 +62,16 @@ function KeyboardKey({
   letter,
   evaluation,
   disabled = false,
-  setCurrentGuess,
+  typeLetter,
 }: {
   letter: string;
   evaluation?: "correct" | "present" | "absent";
   disabled?: boolean;
-  setCurrentGuess: Dispatch<SetStateAction<string>>;
+  typeLetter: (letter: string) => void;
 }) {
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (disabled) {
-      return;
-    }
-    setCurrentGuess((prev) => prev + letter.toLowerCase());
+  const handleClick = () => {
+    if (disabled) return;
+    typeLetter(letter);
   };
 
   return (
@@ -126,16 +124,14 @@ function KeyboardEnterKey({
 
 function KeyboardDeleteKey({
   disabled = false,
-  setCurrentGuess,
+  deleteLetter,
 }: {
   disabled?: boolean;
-  setCurrentGuess: Dispatch<SetStateAction<string>>;
+  deleteLetter: () => void;
 }) {
-  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (disabled) {
-      return;
-    }
-    setCurrentGuess((prev) => prev.slice(0, -1));
+  const handleClick = () => {
+    if (disabled) return;
+    deleteLetter();
   };
 
   return (

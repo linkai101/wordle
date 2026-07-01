@@ -53,11 +53,12 @@ export function Game({ solution, header }: { solution: string; header: React.Rea
 
   // GAME FUNCTIONS
   function typeLetter(letter: string) {
-    if (gameStatus !== "in_progress" || currentGuess.length >= 5) {
-      return;
-    }
+    if (gameStatus !== "in_progress") return;
 
-    setCurrentGuess((prev) => prev + letter.toLowerCase());
+    setCurrentGuess((prev) => {
+      if (prev.length >= 5) return prev;
+      return prev + letter.toLowerCase();
+    });
   }
 
   function deleteLetter() {
@@ -140,7 +141,8 @@ export function Game({ solution, header }: { solution: string; header: React.Rea
       <Keyboard
         evals={keyboardEvals}
         disabled={gameStatus !== "in_progress"}
-        setCurrentGuess={setCurrentGuess}
+        typeLetter={typeLetter}
+        deleteLetter={deleteLetter}
         submitGuess={submitGuess}
       />
     </div>
